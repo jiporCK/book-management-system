@@ -29,7 +29,21 @@ struct Book {
                             << setw(40) << reviews.at(i).comment
                             << setw(6) << reviews.at(i).rating << endl;
             }
+            cout << "[-] Average Rating: " << get_avg_rating() << endl;
         }              
+    }
+
+    void review_book(Review review) {
+        reviews.push_back(review);
+        cout << "[-] Book has been reviewed" << endl;
+    }
+
+    double get_avg_rating() {
+        double total_rating{};
+        for (size_t i = 0; i < reviews.size(); i++) {
+            total_rating += reviews.at(i).rating;
+        }
+        return total_rating / reviews.size();
     }
 };
 
@@ -42,6 +56,7 @@ struct Library {
         books.push_back(book);
         cout << "Book added successfully" << endl;
     }
+    
     void display_books() {
         cout << left << setw(5) << "ID"
                      << setw(30) << "Name"
@@ -52,6 +67,7 @@ struct Library {
                          << setw(20) << books.at(i).author << endl;
         }
     }
+
     void view_book_review_by_id(int id) {
         // implement this
         bool found = false;
@@ -66,6 +82,45 @@ struct Library {
             cout << "Book not found" << endl;
         }
     }
+
+    bool is_exist(int id) {
+        for (size_t i = 0; i < books.size(); i++) {
+            if (books.at(i).id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void review_book_by_id(int id, Review review) {
+        for (size_t i = 0; i < books.size(); i++) {
+            if (books.at(i).id == id) {
+                books.at(i).review_book(review);
+            }
+        }
+    }
+
+    void update_book(int id, Book book) {
+        for (size_t i = 0; i < books.size(); i++) {
+            if (books.at(i).id == id) {
+                books.at(i).title = book.title;
+                books.at(i).author = book.author;
+                cout << "Book updated successfully" << endl;
+                break;
+            }
+        }
+    }
+
+    void delete_book(int id) {
+        for (size_t i = 0; i < books.size(); i++) {
+            if (books.at(i).id == id) {
+
+                books.erase(books.begin() + i);
+                cout << "Book deleted successfully" << endl;
+            }
+        }
+    }
+
  };
 
 int main() {
@@ -119,9 +174,41 @@ int main() {
                 break;
             }
             case 2: {
+
+                int id;
+                cout << "Enter id to update: ";
+                cin >> id;
+
+                if (lib.is_exist(id)) {
+                    string new_title, new_author;
+                    cin.ignore();
+                    cout << "Enter new title: ";
+                    // cin >> new_title;
+                    getline(cin, new_title);
+                    cout << "Enter new author: ";
+                    // cin >> new_author;
+                    getline(cin, new_author);
+
+                    Book book;
+                    book.title = new_title;
+                    book.author = new_author;
+
+                    lib.update_book(id, book);
+
+                }
+
                 break;
             }   
             case 3: {
+
+                int id;
+                cout << "Enter id to delete: ";
+                cin >> id;
+
+                if (lib.is_exist(id)) {
+                    lib.delete_book(id);
+                }
+
                 break;
             }
             case 4: {
@@ -139,8 +226,32 @@ int main() {
                 break;
             }
             case 6: {
+                
                 break;
             } 
+            case 7: {
+
+                int id;
+                cout << "Enter book id to review: ";
+                cin >> id;
+
+                string name, comment;
+                int rating;
+                if (lib.is_exist(id)) {
+                    cin.ignore();
+                    cout << "Enter your name: ";
+                    getline(cin, name);
+                    cout << "Enter your comment: ";
+                    getline(cin, comment);
+                    cout << "Enter your rating(1-5): ";
+                    cin >> rating;
+
+                    Review review = {name, comment, rating};
+                    lib.review_book_by_id(id, review);
+                }
+
+                break;
+            }
             default: {
                 cout << "Invalid option" << endl;
                 cout << "Try again!" << endl;
